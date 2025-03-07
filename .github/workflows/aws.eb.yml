@@ -1,9 +1,8 @@
 name: Deploy to AWS
 on:
-  push:
-    tags:
-      - '*'
-  # Triggers on tag push (e.g., v1.0.1) instead of main.
+  release:
+    types:
+      - published # This workflow runs when a new release is published
 
 jobs:
   deploy:
@@ -11,6 +10,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        ref:${{ github.event.release.tag_name }} # This checks out the code in the tag that triggered the workflow.
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
