@@ -1,0 +1,25 @@
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        # Checks out the code in the tag that triggered the workflow.
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          RELEASE_TOKEN: ${{ secrets.REF_TOKEN }}
+        with:
+          draft: false
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          # This step creates a new release in GitHub using the tag name.
+
