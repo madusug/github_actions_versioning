@@ -28,4 +28,5 @@ jobs:
       - name: Debug tag creation
         run: |
           echo "New tag: ${{ steps.bump.outputs.new_tag }}" 
-          git tag -l  
+          git tag -l
+          git push origin --tags
