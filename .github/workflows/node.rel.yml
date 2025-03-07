@@ -1,10 +1,8 @@
 name: Create Release
-# This workflow creates a new release in GitHub when a new tag is pushed.
 on:
   push:
     tags:
       - '*'
-
 jobs:
   build:
     name: Create Release
@@ -12,17 +10,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        # Checks out the code in the tag that triggered the workflow.
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          RELEASE_TOKEN: ${{ secrets.REF_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}  # Cleaner: uses just "v1.0.1" instead of "refs/tags/v1.0.1"
           release_name: Release ${{ github.ref_name }}
-          # This step creates a new release in GitHub using the tag name.
-          draft: false # Change to false to publish the release
-          prerelease: false # Change to true for a prerelease
-
+          draft: false  # Ensures the release is published, not a draft
+          prerelease: false  # Marks it as a full release (adjust if needed)
