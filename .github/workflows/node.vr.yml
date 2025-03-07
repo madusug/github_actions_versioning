@@ -13,13 +13,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git credentials
+      - name: Mark directory as safe
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
-          git config --global credential.helper store
-        # Sets up GITHUB_TOKEN for Git commands
+          git config --global --add safe.directory $GITHUB_WORKSPACE
 
       - name: Bump version and push tag
         id: bump
@@ -33,4 +29,3 @@ jobs:
         run: |
           echo "New tag: ${{ steps.bump.outputs.new_tag }}"
           git tag -l
-          git push origin --tags
