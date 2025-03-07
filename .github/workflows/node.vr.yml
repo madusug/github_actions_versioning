@@ -10,17 +10,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-        # The checkout action checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+        uses: actions/checkout@v4         # The checkout action checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+        with:
+          fetch-depth: 0                  # Fetch all history for tags to be accessible
+
+      - name: Mark directory as safe
+        run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE 
 
       - name: Bump version and push tag
+        id: bump
         uses: anothrNick/github-tag-action@1.26.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch        # This action automatically increments the patch version and tags the commit.  # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
           WITH_V: true               # 'WITH_V' specifies whether the version should be prefixed with a 'v'.
+
       - name: Debug tag creation
         run: |
           echo "New tag: ${{ steps.bump.outputs.new_tag }}" 
-          git tag -l  # List tags to confirm locally
-          git push origin --tags  # Explicitly push tags (redundant but ensures it works)
+          git tag -l  
+          git push origin --tags  
