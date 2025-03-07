@@ -21,11 +21,13 @@ jobs:
           default_bump: patch
           tag_prefix: v
           create_annotated_tag: true
-          dry_run: true  # Don’t push yet, just calculate the tag
+          dry_run: true
 
-      - name: Push the tag manually
+      - name: Configure Git identity and push tag
         if: steps.bump.outputs.new_tag != ''
         run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
           git tag ${{ steps.bump.outputs.new_tag }} -a -m "Release ${{ steps.bump.outputs.new_tag }}"
           git push origin ${{ steps.bump.outputs.new_tag }}
 
