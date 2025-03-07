@@ -16,14 +16,15 @@ jobs:
 
       - name: Mark directory as safe
         run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE 
+          git config --global --add safe.directory /github/workspace 
 
       - name: Bump version and push tag
         id: bump
         uses: anothrNick/github-tag-action@1.26.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch        # This action automatically increments the patch version and tags the commit.  # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
+          DEFAULT_BUMP: patch        # This action automatically increments the patch version and tags the commit.
+          # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
           WITH_V: true               # 'WITH_V' specifies whether the version should be prefixed with a 'v'.
 
       - name: Debug tag creation
