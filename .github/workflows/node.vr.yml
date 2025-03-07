@@ -17,7 +17,10 @@ jobs:
         uses: anothrNick/github-tag-action@1.26.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-        # This action automatically increments the patch version and tags the commit.
-        # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
-
+          DEFAULT_BUMP: patch        # This action automatically increments the patch version and tags the commit.  # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
+          WITH_V: true               # 'WITH_V' specifies whether the version should be prefixed with a 'v'.
+      - name: Debug tag creation
+        run: |
+          echo "New tag: ${{ steps.bump.outputs.new_tag }}" 
+          git tag -l  # List tags to confirm locally
+          git push origin --tags  # Explicitly push tags (redundant but ensures it works)
