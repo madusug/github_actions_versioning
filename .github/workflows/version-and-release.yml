@@ -1,11 +1,11 @@
-name: Bump version and tag
+name: Bump Version and Create Release
 on:
   push:
     branches:
       - main
 jobs:
   build:
-    name: Create Tag
+    name: Create Tag and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -31,21 +31,21 @@ jobs:
           git tag ${{ steps.bump.outputs.new_tag }} -a -m "Release ${{ steps.bump.outputs.new_tag }}"
           git push origin ${{ steps.bump.outputs.new_tag }}
 
-      - name: Trigger Create Release
+      - name: Create Release
         if: steps.bump.outputs.new_tag != ''
-        uses: actions/github-script@v6
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'node.rel.yml',
-              ref: 'main',
-              inputs: {
-                tag_name: '${{ steps.bump.outputs.new_tag }}'
-              }
-            });
+          tag_name: ${{ steps.bump.outputs.new_tag }}
+          release_name: Release ${{ steps.bump.outputs.new_tag }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
 
       - name: Debug tag creation
         run: |
