@@ -11,11 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
-      - name: Mark directory as safe
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
+          fetch-depth: 0  # Fetches all history and tags
 
       - name: Bump version and push tag
         id: bump
@@ -24,6 +20,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           WITH_V: true
+          INITIAL_VERSION: 0.0.0  # Start at v0.0.0 if no tags exist
+          DRY_RUN: false  # Ensure it actually pushes (default is false, just confirming)
+        with:
+          custom_entrypoint: |
+            #!/bin/bash
+            git config --global --add safe.directory /github/workspace
+            /entrypoint.sh
 
       - name: Debug tag creation
         run: |
