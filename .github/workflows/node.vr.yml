@@ -13,7 +13,9 @@ jobs:
         uses: actions/checkout@v4         # The checkout action checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
         with:
           fetch-depth: 0                  # Fetch all history for tags to be accessible in the workflow.
-
+      
+      - name: Set safe directory
+        run: git config --global --add safe.directory /github/workspace
       - name: Bump version and push tag
         id: bump
         uses: anothrNick/github-tag-action@1.26.0
