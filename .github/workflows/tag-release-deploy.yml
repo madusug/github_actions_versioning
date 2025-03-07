@@ -1,11 +1,11 @@
-name: Bump Version and Create Release
+name: Bump Version, Create Release, and Deploy to AWS
 on:
   push:
     branches:
       - main
 jobs:
   build:
-    name: Create Tag and Release
+    name: Create Tag, Release, and Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -46,6 +46,36 @@ jobs:
             - Second Change
           draft: false
           prerelease: false
+
+      - name: Set up Node.js
+        if: steps.bump.outputs.new_tag != ''
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        if: steps.bump.outputs.new_tag != ''
+        run: npm install
+
+      - name: Build the application
+        if: steps.bump.outputs.new_tag != ''
+        run: npm run build --if-present
+
+      - name: Set up AWS credentials
+        if: steps.bump.outputs.new_tag != ''
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to AWS Elastic Beanstalk
+        if: steps.bump.outputs.new_tag != ''
+        run: |
+          zip -r deploy.zip . -x "*.git*"
+          aws s3 cp deploy.zip s3://my-eb-bucket-darey/deploy-${{ github.sha }}.zip
+          aws elasticbeanstalk create-application-version --application-name my-node-app --version-label ${{ github.sha }} --source-bundle S3Bucket="my-eb-bucket-darey",S3Key="deploy-${{ github.sha }}.zip"
+          aws elasticbeanstalk update-environment --application-name my-node-app --environment-name my-node-env --version-label ${{ github.sha }}
 
       - name: Debug tag creation
         run: |
