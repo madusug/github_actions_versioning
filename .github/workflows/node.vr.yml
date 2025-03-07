@@ -3,30 +3,34 @@ on:
   push:
     branches:
       - main
-
 jobs:
   build:
     name: Create Tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4         # The checkout action checks out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0                  # Fetch all history for tags to be accessible in the workflow.
-      
-      - name: Set safe directory
-        run: git config --global --add safe.directory /github/workspace
+          fetch-depth: 0
+
+      - name: Configure Git credentials
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com" > ~/.git-credentials
+          git config --global credential.helper store
+        # Sets up GITHUB_TOKEN for Git commands
+
       - name: Bump version and push tag
         id: bump
         uses: anothrNick/github-tag-action@1.26.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch        # This action automatically increments the patch version and tags the commit.
-          # 'DEFAULT_BUMP' specifies the type of version bump (major, minor, patch).
-          WITH_V: true               # 'WITH_V' specifies whether the version should be prefixed with a 'v'.
+          DEFAULT_BUMP: patch
+          WITH_V: true
 
       - name: Debug tag creation
         run: |
-          echo "New tag: ${{ steps.bump.outputs.new_tag }}" 
+          echo "New tag: ${{ steps.bump.outputs.new_tag }}"
           git tag -l
           git push origin --tags
