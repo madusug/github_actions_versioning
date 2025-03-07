@@ -15,18 +15,12 @@ jobs:
 
       - name: Bump version and push tag
         id: bump
-        uses: anothrNick/github-tag-action@1.26.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          WITH_V: true
-          INITIAL_VERSION: 0.0.0  # Start at v0.0.0 if no tags exist
-          DRY_RUN: false  # Ensure it actually pushes (default is false, just confirming)
+        uses: mathieudutour/github-tag-action@v6.1
         with:
-          custom_entrypoint: |
-            #!/bin/bash
-            git config --global --add safe.directory /github/workspace
-            /entrypoint.sh
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          tag_prefix: v
+          create_annotated_tag: true
 
       - name: Debug tag creation
         run: |
