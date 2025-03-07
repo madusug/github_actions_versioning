@@ -1,9 +1,9 @@
 name: Deploy to AWS
 on:
   push:
-    branches:
-      - main
-  # This workflow triggers on a push to the 'main' branch.
+    tags:
+      - '*'
+  # Triggers on tag push (e.g., v1.0.1) instead of main.
 
 jobs:
   deploy:
