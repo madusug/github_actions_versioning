@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetches all history and tags
+          fetch-depth: 0
 
       - name: Bump version and push tag
         id: bump
@@ -21,6 +21,13 @@ jobs:
           default_bump: patch
           tag_prefix: v
           create_annotated_tag: true
+          dry_run: true  # Don’t push yet, just calculate the tag
+
+      - name: Push the tag manually
+        if: steps.bump.outputs.new_tag != ''
+        run: |
+          git tag ${{ steps.bump.outputs.new_tag }} -a -m "Release ${{ steps.bump.outputs.new_tag }}"
+          git push origin ${{ steps.bump.outputs.new_tag }}
 
       - name: Debug tag creation
         run: |
